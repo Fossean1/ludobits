@@ -42,4 +42,29 @@ function M.lerp(t, dt, v1, v2)
 	return vmath.lerp(1 - math.pow(10, rate * dt), v1, v2)
 end
 
+--- Get the screen size of a node
+-- @param node Node
+-- @return size Size of node
+function M.gui_get_screen_size(node)
+	local size = gui.get_size(node)
+	local screen_width, screen_height = gui.get_width(), gui.get_height()
+	local window_width, window_height = window.get_size()
+
+	local adjust_mode = gui.get_adjust_mode(node)
+	if adjust_mode == gui.ADJUST_ZOOM then
+		local zoom_factor = math.max(window_width / screen_width, window_height / screen_height)
+		size = size * zoom_factor
+	elseif adjust_mode == gui.ADJUST_FIT then
+		local fit_factor = math.min(window_width / screen_width, window_height / screen_height)
+		size = size * fit_factor
+	elseif adjust_mode == gui.ADJUST_STRETCH then
+		local stretch_x = window_width / screen_width
+		local stretch_y = window_height / screen_height
+		size.x = size.x * stretch_x
+		size.y = size.y * stretch_y
+	end
+
+	return size
+end
+
 return M
